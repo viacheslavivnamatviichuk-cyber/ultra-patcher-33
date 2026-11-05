@@ -1,0 +1,29 @@
+name: CI Validation - ultra-patcher-33
+
+on:
+  schedule:
+    - cron: '8 23,2,8,14 * * *'
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11']
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install and Validate Dependency
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install .
+          python3 -c "import roguard; print('Successfully imported roguard package from:', roguard.__file__)"
+          python3 -m pip cache purge
